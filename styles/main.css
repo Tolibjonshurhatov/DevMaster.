@@ -1,23 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
 /* Creator link uslublari */
-.footer-creator {
-  margin-top: 8px; /* "Barcha huquqlar himoyalangan" yozuvidan biroz pastga tushiradi */
-  text-align: center;
-}
 
-.footer-creator a {
-  font-size: 0.78rem; /* Kichikroq hajm */
-  color: rgba(255, 255, 255, 0.6); /* Mayin oq rang (ko'zni charchatmaslik uchun) */
-  text-decoration: none;
-  transition: color 0.3s ease;
-  display: inline-block;
-}
-
-/* Sichqoncha ustiga borganda (Hover) */
-.footer-creator a:hover {
-  color: #ffffff; /* To'liq oq rangga o'tadi */
-  text-decoration: underline; /* Ostiga chiziq chiqadi */
-}
 :root {
   /* Oq-qora ranglar palitrasi */
   --primary: #0a0a0a;          /* Toʻq qora fon */
@@ -108,7 +91,24 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; outline: none; }
   33% { transform: translate(30px, -50px) scale(1.05); }
   66% { transform: translate(-20px, 30px) scale(0.95); }
 }
+.footer-creator {
+  margin-top: 8px; /* "Barcha huquqlar himoyalangan" yozuvidan biroz pastga tushiradi */
+  text-align: center;
+}
 
+.footer-creator a {
+  font-size: 0.78rem; /* Kichikroq hajm */
+  color: rgba(255, 255, 255, 0.6); /* Mayin oq rang (ko'zni charchatmaslik uchun) */
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: inline-block;
+}
+
+/* Sichqoncha ustiga borganda (Hover) */
+.footer-creator a:hover {
+  color: #ffffff; /* To'liq oq rangga o'tadi */
+  text-decoration: underline; /* Ostiga chiziq chiqadi */
+}
 /* ── NAVBAR ── */
 .navbar {
   position: fixed;
