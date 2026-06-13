@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="./images/dev_v copy.jpg">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sertifikat — DevMaster</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/auth.css" />
+  <link rel="stylesheet" href="styles/certificate.css" />
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+          <img src="./images/dev_v copy.jpg" alt="">
+    <span>DevMaster</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html"> Bosh sahifa</a></li>
+    <li><a href="courses.html"> Kurslar</a></li>
+    <li><a href="profile.html">👤 Profil</a></li>
+  </ul>
+  <div class="nav-actions" id="nav-auth-area"></div>
+</nav>
+
+<div class="cert-page">
+  <div class="cert-page-inner">
+    <div id="cert-root"></div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<style>
+/* Ekran uchun qo'shimcha stillar (agar CSS faylda bo'lmasa xato bermasligi uchun) */
+.cert-watermark-logo-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  height: 350px;
+  opacity: 0.05;
+  z-index: 1;
+  pointer-events: none;
+}
+.cert-watermark-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cert-signature-wrap {
+  width: 140px;
+  height: 55px;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.7);
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cert-signature-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.cert-stamp-wrap {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cert-stamp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* CHOP ETISH (PRINT) SOZLAMALARI */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0 !important;
+  }
+  html, body {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .navbar, .cert-actions-panel, .cert-page-header, .bg-grid, .bg-orbs, footer { 
+    display: none !important; 
+  }
+  .cert-page { 
+    padding: 0 !important; 
+    margin: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .cert-page-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .certificate-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .certificate { 
+    width: 297mm !important;  
+    height: 210mm !important; 
+    box-shadow: none !important; 
+    border: none !important;
+    border-radius: 0 !important; 
+    background: #121212 !important; 
+    position: relative !important;
+    margin: 0 auto !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .cert-content * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+</style>
+
+<script src="js/app.js"></script>
+<script src="js/courses.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const user = Auth.getUser();
+  const params = new URLSearchParams(window.location.search);
+  const courseId = params.get('course');
+
+  if (!user) {
+    document.getElementById('cert-root').innerHTML = `
+      <div style="text-align:center;padding:4rem 2rem">
+        <div style="font-size:4rem;margin-bottom:1rem">🔒</div>
+        <h2 style="font-family:'Syne',sans-serif; font-size: 2rem;">Tizimga kirish kerak</h2>
+        <p style="color:var(--text-muted);margin:1rem 0 2rem; font-size: 1.1rem;">Sertifikatlarni ko'rish uchun kiring.</p>
+        <button class="btn btn-primary" onclick="window.location.href='index.html'" style="cursor:pointer">Bosh sahifaga</button>
+      </div>`;
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem('dm_users') || '[]');
+  const freshUser = users.find(u => u.id === user.id) || user;
+  const certs = freshUser.certificates || [];
+
+  if (courseId) {
+    const cert = certs.find(c => c.courseId === courseId);
+    if (!cert) {
+      document.getElementById('cert-root').innerHTML = `
+        <div style="text-align:center;padding:4rem 2rem">
+          <div style="font-size:4rem;margin-bottom:1rem">😔</div>
+          <h2 style="font-family:'Syne',sans-serif; font-size: 2rem;">Sertifikat topilmadi</h2>
+          <p style="color:var(--text-muted);margin:1rem 0 2rem; font-size: 1.1rem;">Bu kurs uchun sertifikat hali berilmagan. Avval kursni tugatib ko'ring.</p>
+          <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="window.location.href='courses.html'" style="cursor:pointer">📚 Kurslarga o'tish</button>
+            <button class="btn btn-ghost" onclick="window.location.href='profile.html'" style="cursor:pointer">👤 Profilga qaytish</button>
+          </div>
+        </div>`;
+      return;
+    }
+    renderCertificate(freshUser, cert);
+  } else {
+    renderAllCertificates(freshUser, certs);
+  }
+});
+
+function renderAllCertificates(user, certs) {
+  if (certs.length === 0) {
+    document.getElementById('cert-root').innerHTML = `
+      <div class="cert-page-header">
+        <h1>🏆 Sertifikatlarim</h1>
+        <p>Kurslarni tugatib sertifikat oling</p>
+      </div>
+      <div style="text-align:center;padding:4rem 2rem;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius)">
+        <div style="font-size:5rem;margin-bottom:1.5rem">📜</div>
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem">Hali sertifikat yo'q</h2>
+        <p style="color:var(--text-muted);margin-bottom:2rem;font-size:1.1rem;">Birinchi sertifikatingizni olish uchun kursni tugatib ko'ring!</p>
+        <button class="btn btn-primary" onclick="window.location.href='courses.html'" style="cursor:pointer">📚 Kurslarni ko'rish</button>
+      </div>`;
+    return;
+  }
+
+  const hasF = certs.find(c => c.courseId === 'frontend');
+  const hasB = certs.find(c => c.courseId === 'backend');
+  let fsHtml = '';
+  if (hasF && hasB) {
+    fsHtml = `
+      <div style="display:flex;align-items:center;gap:1.5rem;padding:1.75rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius);margin-bottom:2.5rem;flex-wrap:wrap">
+        <span style="font-size:3rem">🏆</span>
+        <div style="flex:1">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:#ffffff">Full-Stack Developer</div>
+          <div style="font-size:1rem;color:var(--text-muted)">Frontend va Backend kurslarini tugatdingiz. Siz Full-Stack Developer sifatida tan olindingiz!</div>
+        </div>
+        <span class="tag">🎉 Maxsus unvon</span>
+      </div>`;
+  }
+
+  const certCards = certs.map(cert => `
+    <div class="feature-card animate-in" style="cursor:pointer;border-color:rgba(255,255,255,0.15); padding: 2.5rem;" onclick="window.location.href='certificate.html?course=${cert.courseId}'">
+      <div style="font-size:3rem;margin-bottom:1rem">🏆</div>
+      <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">${cert.courseName}</h3>
+      <p style="color:var(--text-muted);font-size:0.95rem;margin-bottom:1.5rem">Sertifikat ID: <span style="font-family:monospace;color:#ffffff; font-weight:600;">${cert.id}</span></p>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span class="tag">${cert.earnedAt}</span>
+        <span style="font-size:0.95rem;color:#ffffff; font-weight: 600;">Ko'rish →</span>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('cert-root').innerHTML = `
+    <div class="cert-page-header">
+      <h1>🏆 Sertifikatlarim</h1>
+      <p style="font-size:1.2rem;">Siz muvaffaqiyatli ravishda ${certs.length} ta sertifikatga ega bo'ldingiz!</p>
+    </div>
+    ${fsHtml}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2rem">
+      ${certCards}
+    </div>`;
+  initScrollAnimations();
+}
+
+function renderCertificate(user, cert) {
+  const course = COURSES.find(c => c.id === cert.courseId) || {};
+  const fullName = `${user.firstName} ${user.lastName}`;
+  const certId = cert.id;
+  const earnedAt = cert.earnedAt;
+
+  let devTypeLabel = cert.courseType + ' Developer';
+  if (cert.courseId === 'frontend') devTypeLabel = 'Frontend Developer';
+  else if (cert.courseId === 'backend') devTypeLabel = 'Backend Developer';
+  else if (cert.courseId === 'fullstack') devTypeLabel = 'Full-Stack Developer';
+  else if (cert.courseId === 'devops') devTypeLabel = 'DevOps Engineer';
+  else if (cert.courseId === 'mobile') devTypeLabel = 'Mobile Developer';
+  else if (cert.courseId === 'design') devTypeLabel = 'UI/UX Designer';
+
+  const certs = user.certificates || [];
+  const hasF = certs.find(c => c.courseId === 'frontend');
+  const hasB = certs.find(c => c.courseId === 'backend');
+  const isFS = hasF && hasB;
+
+  document.getElementById('cert-root').innerHTML = `
+    <div class="cert-page-header">
+      <h1>🎓 Sertifikatingiz</h1>
+      <p>Tabriklaymiz, ${user.firstName}! Siz sertifikat oldingiz.</p>
+    </div>
+
+    ${isFS ? `
+    <div class="cert-earned-banner">
+      <div class="cert-earned-icon">🏆</div>
+      <div class="cert-earned-text">
+        <h3>Siz Full-Stack Developer sifatida tan olindingiz!</h3>
+        <p>Frontend va Backend kurslarini ikkalasini ham muvaffaqiyatli tugatdingiz.</p>
+      </div>
+    </div>` : ''}
+
+    <div class="certificate-wrapper">
+      <div class="certificate" id="certificate-doc">
+        <div class="cert-bg"></div>
+        <div class="cert-pattern"></div>
+        
+        <div class="cert-watermark-logo-wrap">
+           <img src="./images/dev_master.png" alt="DevMaster"" alt="logo"/>
+        </div>
+
+        <div class="cert-content">
+          <div class="cert-top">
+            <div class="cert-logo-area">
+              <img src="./images/dev_v copy.jpg" alt="Logo" class="cert-logo-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="cert-logo-icon" style="display:none; width:44px; height:44px; background:rgba(255,255,255,0.1); border-radius:10px; align-items:center; justify-content:center; font-size:1.2rem; color:#fff;">🎓</div>
+              <div>
+                <div class="cert-org-name">DevMaster</div>
+                <div class="cert-org-sub">IT Education Platform</div>
+              </div>
+            </div>
+            <div class="cert-number">ID: ${certId}</div>
+          </div>
+
+          <div class="cert-title-area">
+            <span class="cert-of-completion">Certificate of Completion</span>
+            <div class="cert-main-title">Muvaffaqiyatli Tamomlash</div>
+          </div>
+
+          <div class="cert-divider">
+            <div class="cert-divider-line"></div>
+            <div class="cert-divider-diamond"></div>
+            <div class="cert-divider-line"></div>
+          </div>
+
+          <div style="text-align:center">
+            <span class="cert-awarded-to">Ushbu sertifikat quyidagiga beriladi</span>
+            <div class="cert-name">${fullName}</div>
+          </div>
+
+          <div class="cert-course-area">
+            <div class="cert-for-completing">muvaffaqiyatli tamomlanganligi uchun</div>
+            <div class="cert-course-name">${cert.courseName}</div>
+            <span class="cert-course-type">${devTypeLabel}</span>
+          </div>
+
+          <div class="cert-divider">
+            <div class="cert-divider-line"></div>
+            <div class="cert-divider-diamond"></div>
+            <div class="cert-divider-line"></div>
+          </div>
+
+          <div class="cert-bottom">
+            <div class="cert-signature-area">
+              <div class="cert-signature-wrap">
+                <img src="./images/signature2.webp" alt="" class="cert-signature-img" />
+              </div>
+              <div class="cert-sig-name">DevMaster CEO</div>
+              <div class="cert-sig-label">Rahbar imzosi</div>
+            </div>
+
+            <div class="cert-center-info">
+              <div class="cert-date-area">
+                <span class="cert-date-label">Berilgan sana</span>
+                <div class="cert-date-val">${earnedAt}</div>
+              </div>
+              <div class="cert-badge-row">
+                <span class="cert-skill-tag">${(course.skills || ['IT'])[0]}</span>
+                <span class="cert-skill-tag">${(course.skills || ['Dev', 'Pro'])[1] || 'Pro'}</span>
+              </div>
+            </div>
+
+            <div class="cert-stamp-area">
+              <div class="cert-stamp-wrap">
+                <img src="./images/stamp2.webp" alt="" class="cert-stamp-img" />
+              </div>
+              <div class="cert-stamp-label">Tashkilot Muhri</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-actions-panel">
+      <div class="cert-actions-info">
+        <h3>Sertifikatingiz tayyor!</h3>
+        <p>Yuklab oling, chop eting yoki ulashing</p>
+      </div>
+      <div class="cert-action-btns">
+        <button class="btn btn-primary" onclick="printCert()" style="cursor:pointer">🖨️ Chop etish</button>
+        <button class="btn btn-ghost" onclick="window.location.href='certificate.html'" style="cursor:pointer">📋 Barchasi</button>
+        <button class="btn btn-ghost" onclick="window.location.href='profile.html'" style="cursor:pointer">👤 Profil</button>
+      </div>
+    </div>
+
+    ${(user.certificates || []).filter(c => c.courseId !== cert.courseId).length > 0 ? `
+    <div style="margin-top:2.5rem">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.2rem; font-size: 1.3rem;">Boshqa sertifikatlaringiz</h3>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        ${(user.certificates || []).filter(c => c.courseId !== cert.courseId).map(c => `
+          <a href="certificate.html?course=${c.courseId}" class="btn btn-ghost btn-sm" style="cursor:pointer; font-size:0.9rem; padding: 10px 16px;">🏆 ${c.courseName}</a>
+        `).join('')}
+      </div>
+    </div>` : ''}
+  `;
+}
+
+function printCert() {
+  window.print();
+}
+</script>
+</body>
+</html>

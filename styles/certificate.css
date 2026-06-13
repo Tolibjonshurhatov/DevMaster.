@@ -1,0 +1,399 @@
+/* ── CERTIFICATE PAGE ── */
+.cert-page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: calc(var(--nav-height) + 4rem) 2rem 5rem;
+}
+
+.cert-page-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.cert-page-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.cert-page-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.cert-page-header p { 
+  color: var(--text-muted); 
+  font-size: 1.2rem; 
+}
+
+/* ── CERTIFICATE DOCUMENT ── */
+.certificate-wrapper {
+  position: relative;
+  margin-bottom: 3rem;
+}
+
+.certificate {
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+  position: relative;
+  aspect-ratio: 1.414 / 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInUp 0.8s ease both;
+  
+  /* Chop etishda ranglar va fon rasmlari sifatli chiqishi uchun muhim qism */
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-scheme: dark;
+}
+
+/* Monoxrom ramka */
+.certificate::before {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border: 3px solid transparent;
+  border-image: linear-gradient(135deg, #ffffff, #888888, #ffffff, #333333) 1;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.certificate::after {
+  content: '';
+  position: absolute;
+  inset: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cert-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #121212 0%, #1a1a1a 100%) !important;
+}
+
+.cert-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03) 0%, transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.03) 0%, transparent 60%);
+  z-index: 1;
+}
+
+/* ORQADAGI KATTA LOGOTIP (WATERMARK) */
+.cert-watermark-logo-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 380px;
+  opacity: 0.04; /* Xira orqa fon effekti */
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cert-watermark-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cert-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 6% 7%;
+}
+
+/* Top bar */
+.cert-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4%;
+}
+
+.cert-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cert-logo-icon-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.cert-org-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: #ffffff !important;
+}
+
+.cert-org-sub {
+  font-size: 0.8rem;
+  color: #aaaaaa !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.cert-number {
+  font-size: 0.9rem;
+  color: #888888 !important;
+  font-family: monospace;
+}
+
+/* Certificate title */
+.cert-title-area {
+  text-align: center;
+  margin-bottom: 3%;
+}
+
+.cert-of-completion {
+  font-size: clamp(0.75rem, 1.5vw, 1.1rem);
+  color: #aaaaaa !important;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.cert-main-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 900;
+  color: #ffffff !important;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.cert-awarded-to {
+  font-size: clamp(0.7rem, 1.3vw, 1rem);
+  color: #888888 !important;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Recipient name */
+.cert-name {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 4.5vw, 3.8rem);
+  color: #ffffff !important;
+  display: block;
+  margin-bottom: 3%;
+  line-height: 1.1;
+}
+
+/* Course info */
+.cert-course-area {
+  text-align: center;
+  margin-bottom: 4%;
+}
+
+.cert-for-completing {
+  font-size: clamp(0.75rem, 1.4vw, 1.1rem);
+  color: #aaaaaa !important;
+  margin-bottom: 6px;
+  letter-spacing: 0.06em;
+}
+
+.cert-course-name {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+  color: #ffffff !important;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.cert-course-type {
+  display: inline-block;
+  padding: 5px 18px;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50px;
+  font-size: clamp(0.65rem, 1.1vw, 0.9rem);
+  font-weight: 700;
+  color: #ffffff !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Decorative line */
+.cert-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 3% 0;
+}
+
+.cert-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent) !important;
+}
+
+.cert-divider-diamond {
+  width: 10px;
+  height: 10px;
+  background: #ffffff !important;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+/* Bottom area */
+.cert-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+/* Signature area */
+.cert-signature-area {
+  text-align: center;
+  min-width: 160px;
+}
+
+.cert-signature-wrap {
+  width: 150px;
+  height: 60px;
+  border-bottom: 1.5px solid #ffffff !important;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cert-signature-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.cert-sig-label {
+  font-size: clamp(0.6rem, 1vw, 0.8rem);
+  color: #888888 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cert-sig-name {
+  font-size: clamp(0.75rem, 1.2vw, 1rem);
+  font-weight: 700;
+  color: #ffffff !important;
+  margin-top: 2px;
+}
+
+/* Stamp area */
+.cert-stamp-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.cert-stamp-wrap {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cert-stamp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cert-stamp-label {
+  font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+  color: #888888 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Center area */
+.cert-center-info {
+  text-align: center;
+}
+
+.cert-date-area { margin-bottom: 8px; }
+.cert-date-label {
+  font-size: clamp(0.6rem, 1vw, 0.8rem);
+  color: #888888 !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+}
+.cert-date-val {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+  font-weight: 700;
+  color: #ffffff !important;
+}
+
+.cert-badge-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.cert-skill-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 50px;
+  font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+  color: #ffffff !important;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* CHOP ETISH SOZLAMALARI (MUKAMMAL RANG UYGUNLUGI) */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .navbar, .cert-actions-panel, .cert-page-header, .bg-grid, .bg-orbs, footer { 
+    display: none !important; 
+  }
+  .cert-page { 
+    padding: 0 !important; 
+    margin: 0 !important;
+  }
+  .certificate-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .certificate {
+    box-shadow: none !important;
+    border: none !important;
+    background: #121212 !important; /* To'q monoxrom ko'rinish qog'ozda saqlanadi */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

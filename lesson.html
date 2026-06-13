@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="./images/dev_v copy.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dars — DevMaster</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/auth.css" />
+  <style>
+    /* ── LESSON PAGE LAYOUT ── */
+    .lesson-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+      padding-top: var(--nav-height);
+    }
+
+    /* ── LEFT: VIDEO AREA ── */
+    .video-main {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      display: flex;
+      flex-direction: column;
+      background: #050508;
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* Video player box */
+    .video-player-box {
+      position: relative;
+      width: 100%;
+      background: #000;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* iframe / video embed */
+    .video-player-box iframe,
+    .video-player-box video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Empty state — no URL yet */
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: linear-gradient(135deg, #0a0a1a, #12121f);
+    }
+
+    .video-placeholder-icon {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(108,99,255,0.15);
+      border: 2px solid rgba(108,99,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      animation: pulse 2s ease infinite;
+    }
+
+    .video-placeholder h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .video-placeholder p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-align: center;
+      max-width: 300px;
+      line-height: 1.6;
+    }
+
+    /* ── VIDEO INFO BAR ── */
+    .video-info-bar {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95);
+      flex-shrink: 0;
+    }
+
+    .video-info-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .video-lesson-num {
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .video-lesson-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .video-lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.83rem;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+    }
+
+    .video-lesson-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Mark done button */
+    .mark-done-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .mark-done-btn.not-done {
+      background: linear-gradient(135deg, var(--accent3), #2ecc71);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 20px rgba(67,233,123,0.35);
+    }
+
+    .mark-done-btn.not-done:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(67,233,123,0.5);
+    }
+
+    .mark-done-btn.is-done {
+      background: rgba(67,233,123,0.1);
+      border: 1.5px solid rgba(67,233,123,0.4);
+      color: var(--accent3);
+    }
+
+    .mark-done-btn.is-done:hover {
+      background: rgba(255,101,132,0.1);
+      border-color: rgba(255,101,132,0.4);
+      color: var(--accent2);
+    }
+
+    .mark-done-btn.is-done:hover .btn-text::before { content: '↩ '; }
+    .mark-done-btn.is-done:hover .btn-text { opacity: 0.7; }
+
+    /* ── NAV PREV/NEXT ── */
+    .video-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: rgba(10,10,15,0.9);
+      margin-top: auto;
+    }
+
+    .nav-lesson-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .nav-lesson-btn:hover:not(:disabled) {
+      background: var(--glass-hover);
+      border-color: var(--border-bright);
+    }
+
+    .nav-lesson-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .nav-lesson-btn .lesson-nav-info {
+      text-align: left;
+    }
+
+    .nav-lesson-btn .lesson-nav-info .lbl {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      display: block;
+    }
+
+    .nav-lesson-btn .lesson-nav-info .ttl {
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    /* Progress mini in nav */
+    .nav-progress {
+      text-align: center;
+    }
+
+    .nav-progress .prog-frac {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .nav-progress .prog-label {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .mini-prog-bar {
+      width: 80px;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      margin: 4px auto 0;
+      overflow: hidden;
+    }
+
+    .mini-prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── RIGHT: PLAYLIST SIDEBAR ── */
+    .playlist-sidebar {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      border-left: 1px solid var(--border);
+      background: rgba(10,10,15,0.97);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: sticky;
+      top: var(--nav-height);
+      height: calc(100vh - var(--nav-height));
+    }
+
+    .playlist-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .playlist-header h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .playlist-progress-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 0.4rem;
+    }
+
+    .playlist-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      border-radius: 6px;
+      transition: width 0.6s ease;
+    }
+
+    .playlist-progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .playlist-progress-text span:last-child { color: var(--accent); font-weight: 600; }
+
+    /* Lessons list */
+    .playlist-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+    }
+
+    .playlist-list::-webkit-scrollbar { width: 4px; }
+    .playlist-list::-webkit-scrollbar-thumb { background: rgba(108,99,255,0.3); border-radius: 2px; }
+
+    /* Each lesson row */
+    .playlist-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 3px;
+      position: relative;
+    }
+
+    .playlist-item:hover {
+      background: var(--glass-hover);
+    }
+
+    .playlist-item.active {
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.25);
+    }
+
+    .playlist-item.completed {
+      opacity: 0.75;
+    }
+
+    .playlist-item.completed:hover { opacity: 1; }
+
+    /* Number / check circle */
+    .pl-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .pl-num.todo {
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      color: var(--text-dim);
+    }
+
+    .playlist-item.active .pl-num.todo {
+      background: rgba(108,99,255,0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .pl-num.done-num {
+      background: rgba(67,233,123,0.15);
+      border: 1.5px solid rgba(67,233,123,0.4);
+      color: var(--accent3);
+      font-size: 1rem;
+    }
+
+    /* Playing icon */
+    .pl-num.playing {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      animation: playingPulse 1.5s ease infinite;
+    }
+
+    @keyframes playingPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(108,99,255,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(108,99,255,0); }
+    }
+
+    .pl-info { flex: 1; overflow: hidden; }
+
+    .pl-title {
+      font-size: 0.87rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.2s;
+    }
+
+    .playlist-item.active .pl-title { color: var(--accent); font-weight: 600; }
+    .playlist-item.completed .pl-title { color: var(--text-muted); }
+
+    .pl-dur {
+      font-size: 0.73rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* Done badge on right */
+    .pl-done-badge {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: rgba(67,233,123,0.15);
+      border: 1px solid rgba(67,233,123,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+      color: var(--accent3);
+      flex-shrink: 0;
+    }
+
+    /* Finish course banner in sidebar */
+    .finish-banner {
+      margin: 0.75rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, rgba(247,201,72,0.08), rgba(108,99,255,0.08));
+      border: 1px solid rgba(247,201,72,0.25);
+      border-radius: 12px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .finish-banner .fb-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+    .finish-banner h4 { font-family: 'Syne',sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--gold); margin-bottom: 0.3rem; }
+    .finish-banner p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.75rem; }
+
+    /* ── COMPLETION OVERLAY ── */
+    .completion-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .completion-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .completion-card {
+      background: var(--secondary);
+      border: 1px solid rgba(247,201,72,0.4);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 60px rgba(247,201,72,0.15);
+      transform: scale(0.9) translateY(30px);
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .completion-overlay.show .completion-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .completion-trophy {
+      font-size: 5rem;
+      display: block;
+      margin-bottom: 1rem;
+      animation: trophyBounce 0.8s cubic-bezier(0.36,0.07,0.19,0.97) 0.3s both;
+    }
+
+    @keyframes trophyBounce {
+      0% { transform: scale(0) rotate(-15deg); }
+      60% { transform: scale(1.2) rotate(5deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    .completion-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .completion-card .course-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .completion-card p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .completion-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Stars animation */
+    .stars-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 1.25rem;
+    }
+
+    .star {
+      font-size: 1.8rem;
+      animation: starPop 0.4s ease both;
+    }
+
+    .star:nth-child(1) { animation-delay: 0.5s; }
+    .star:nth-child(2) { animation-delay: 0.65s; }
+    .star:nth-child(3) { animation-delay: 0.8s; }
+
+    @keyframes starPop {
+      from { transform: scale(0) rotate(-30deg); opacity: 0; }
+      to { transform: scale(1) rotate(0); opacity: 1; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .lesson-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr;
+      }
+
+      .video-main {
+        grid-column: 1;
+        grid-row: 1;
+        min-height: auto;
+      }
+
+      .playlist-sidebar {
+        grid-column: 1;
+        grid-row: 2;
+        position: static;
+        height: auto;
+        max-height: 420px;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .video-info-top { flex-direction: column; }
+      .mark-done-btn { width: 100%; justify-content: center; }
+      .video-nav-bar { padding: 0.75rem 1rem; gap: 0.5rem; }
+      .nav-lesson-btn .lesson-nav-info .ttl { max-width: 100px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid" style="opacity:0.4"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+          <img src="./images/dev_v copy.jpg" alt="">
+    <span>DevMaster</span>
+  </a>
+
+  <!-- Breadcrumb in navbar -->
+  <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-muted);margin-left:1.5rem;flex:1">
+    <a href="courses.html" style="color:var(--text-muted);transition:color 0.2s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">📚 Kurslar</a>
+    <span style="color:var(--text-dim)">›</span>
+    <span id="nav-course-name" style="color:var(--text)">...</span>
+    <span style="color:var(--text-dim)">›</span>
+    <span id="nav-lesson-name" style="color:var(--accent);font-weight:500">...</span>
+  </div>
+
+  <div class="nav-actions" id="nav-auth-area"></div>
+</nav>
+
+<!-- MAIN LESSON LAYOUT -->
+<div class="lesson-layout">
+
+  <!-- LEFT: VIDEO + INFO -->
+  <div class="video-main">
+
+    <!-- VIDEO PLAYER -->
+    <div class="video-player-box" id="video-player-box">
+      <div class="video-placeholder" id="video-placeholder">
+        <div class="video-placeholder-icon">▶</div>
+        <h3>Video yuklanmoqda...</h3>
+        <p>Video URL hali qo'shilmagan. <code>courses.js</code> faylida <code>url: ''</code> joyiga URL qo'ying.</p>
+      </div>
+      <!-- iframe yoki video shu yerga qo'yiladi JS orqali -->
+    </div>
+
+    <!-- VIDEO INFO -->
+    <div class="video-info-bar">
+      <div class="video-info-top">
+        <div>
+          <div class="video-lesson-num" id="lesson-num">Dars 1</div>
+          <div class="video-lesson-title" id="lesson-title">Dars nomi</div>
+          <div class="video-lesson-meta">
+            <span>⏱ <span id="lesson-dur">--:--</span></span>
+            <span>📚 <span id="course-name-meta">Kurs</span></span>
+            <span id="done-badge" style="display:none;color:var(--accent3)">✅ Tugatildi</span>
+          </div>
+        </div>
+        <button class="mark-done-btn not-done" id="mark-done-btn" onclick="toggleCurrentDone()" style="cursor:pointer">
+          <span>✓</span>
+          <span class="btn-text">Darsni tugatdim</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PREV / NEXT NAV -->
+    <div class="video-nav-bar">
+      <button class="nav-lesson-btn" id="prev-btn" onclick="goPrev()" disabled style="cursor:pointer">
+        <span>←</span>
+        <div class="lesson-nav-info">
+          <span class="lbl">Oldingi dars</span>
+          <span class="ttl" id="prev-title">—</span>
+        </div>
+      </button>
+
+      <div class="nav-progress">
+        <div class="prog-frac"><span id="done-count">0</span>/<span id="total-count">0</span></div>
+        <span class="prog-label">dars bajarildi</span>
+        <div class="mini-prog-bar">
+          <div class="mini-prog-fill" id="mini-prog-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <button class="nav-lesson-btn" id="next-btn" onclick="goNext()" style="cursor:pointer;flex-direction:row-reverse;text-align:right">
+        <span>→</span>
+        <div class="lesson-nav-info" style="text-align:right">
+          <span class="lbl">Keyingi dars</span>
+          <span class="ttl" id="next-title">—</span>
+        </div>
+      </button>
+    </div>
+
+  </div><!-- /video-main -->
+
+  <!-- RIGHT: PLAYLIST SIDEBAR -->
+  <aside class="playlist-sidebar">
+
+    <div class="playlist-header">
+      <h3 id="sidebar-course-title">Kurs darslar ro'yxati</h3>
+      <div class="playlist-progress-wrap">
+        <div class="playlist-progress-bar" id="sidebar-prog-bar" style="width:0%"></div>
+      </div>
+      <div class="playlist-progress-text">
+        <span><span id="sidebar-done-count">0</span> / <span id="sidebar-total-count">0</span> dars</span>
+        <span id="sidebar-pct">0%</span>
+      </div>
+    </div>
+
+    <div class="playlist-list" id="playlist-list">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Finish banner — shown when all done -->
+    <div class="finish-banner" id="finish-banner" style="display:none">
+      <div class="fb-icon">🏆</div>
+      <h4>Kurs tugatildi!</h4>
+      <p>Tabriklaymiz! Siz bu kursni muvaffaqiyatli yakunladingiz.</p>
+      <button class="btn btn-primary btn-sm" onclick="goToCertificate()" style="cursor:pointer;width:100%;justify-content:center">🎓 Sertifikat olish</button>
+    </div>
+
+  </aside>
+
+</div><!-- /lesson-layout -->
+
+<!-- ── COMPLETION OVERLAY ── -->
+<div class="completion-overlay" id="completion-overlay">
+  <div class="completion-card">
+    <span class="completion-trophy">🏆</span>
+    <div class="stars-row">
+      <span class="star">⭐</span>
+      <span class="star">⭐</span>
+      <span class="star">⭐</span>
+    </div>
+    <h2>Tabriklaymiz!</h2>
+    <div class="course-name" id="comp-course-name">Kurs tugatildi</div>
+    <p id="comp-desc">Siz barcha darslarni muvaffaqiyatli yakunladingiz. Endi rasmiy sertifikatingizni oling!</p>
+    <div class="completion-actions">
+      <button class="btn btn-primary btn-lg" onclick="goToCertificate()" style="cursor:pointer">🎓 Sertifikat olish</button>
+      <button class="btn btn-ghost" onclick="closeCompletion()" style="cursor:pointer">Davom etish</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/app.js"></script>
+<script src="js/courses.js"></script>
+<script>
+// ── STATE ──
+let currentCourseId = null;
+let currentVideoIdx = 0;
+let currentCourse = null;
+let courseProgress = null;
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  currentCourseId = params.get('course') || 'frontend';
+  const videoParam = parseInt(params.get('video') || '0');
+
+  if (!Auth.isLoggedIn()) {
+    showToast('Darslarni ko\'rish uchun kiring', 'info');
+    setTimeout(() => window.location.href = 'index.html', 1200);
+    return;
+  }
+
+  currentCourse = COURSES.find(c => c.id === currentCourseId);
+  if (!currentCourse) { window.location.href = 'courses.html'; return; }
+
+  currentVideoIdx = Math.max(0, Math.min(videoParam, currentCourse.videos.length - 1));
+  courseProgress = getCourseProgress(currentCourseId);
+
+  renderPlaylist();
+  loadVideo(currentVideoIdx);
+  updateNavBreadcrumb();
+});
+
+// ── LOAD VIDEO ──
+function loadVideo(idx) {
+  if (!currentCourse) return;
+  const video = currentCourse.videos[idx];
+  if (!video) return;
+
+  currentVideoIdx = idx;
+  courseProgress = getCourseProgress(currentCourseId);
+  const isDone = courseProgress.videos?.includes(video.id);
+
+  // Update page title
+  document.title = `${video.title} — DevMaster`;
+
+  // Navbar
+  document.getElementById('nav-lesson-name').textContent = video.title;
+
+  // Info bar
+  document.getElementById('lesson-num').textContent = `Dars ${idx + 1} / ${currentCourse.videos.length}`;
+  document.getElementById('lesson-title').textContent = video.title;
+  document.getElementById('lesson-dur').textContent = video.duration;
+  document.getElementById('course-name-meta').textContent = currentCourse.title;
+
+  // Done badge & button
+  const doneBadge = document.getElementById('done-badge');
+  const markBtn = document.getElementById('mark-done-btn');
+  if (isDone) {
+    doneBadge.style.display = 'inline-flex';
+    markBtn.className = 'mark-done-btn is-done';
+    markBtn.innerHTML = '<span>✅</span><span class="btn-text">Tugatildi</span>';
+  } else {
+    doneBadge.style.display = 'none';
+    markBtn.className = 'mark-done-btn not-done';
+    markBtn.innerHTML = '<span>✓</span><span class="btn-text">Darsni tugatdim</span>';
+  }
+
+  // Render player
+  renderPlayer(video.url, video.title);
+
+  // Prev / Next
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const prevTitle = document.getElementById('prev-title');
+  const nextTitle = document.getElementById('next-title');
+
+  if (idx > 0) {
+    prevBtn.disabled = false;
+    prevTitle.textContent = currentCourse.videos[idx - 1].title;
+  } else {
+    prevBtn.disabled = true;
+    prevTitle.textContent = '—';
+  }
+
+  if (idx < currentCourse.videos.length - 1) {
+    nextBtn.disabled = false;
+    nextTitle.textContent = currentCourse.videos[idx + 1].title;
+  } else {
+    nextBtn.disabled = true;
+    nextTitle.textContent = '—';
+  }
+
+  // Progress mini
+  updateProgressUI();
+
+  // Highlight active in playlist
+  highlightPlaylistItem(idx);
+
+  // Update URL without reload
+  const url = new URL(window.location);
+  url.searchParams.set('course', currentCourseId);
+  url.searchParams.set('video', idx);
+  window.history.replaceState({}, '', url);
+}
+
+// ── RENDER PLAYER ──
+function renderPlayer(url, title) {
+  const box = document.getElementById('video-player-box');
+  const placeholder = document.getElementById('video-placeholder');
+
+  if (!url || url.trim() === '') {
+    // Show placeholder
+    placeholder.style.display = 'flex';
+    // Remove any existing iframe/video
+    box.querySelectorAll('iframe, video').forEach(el => el.remove());
+    placeholder.innerHTML = `
+      <div class="video-placeholder-icon">▶</div>
+      <h3>${title}</h3>
+      <p>Video URL hali qo'shilmagan.<br>
+      <code style="background:rgba(108,99,255,0.15);padding:2px 8px;border-radius:4px;font-size:0.8rem">courses.js</code> faylida
+      ushbu darsning <code style="background:rgba(108,99,255,0.15);padding:2px 8px;border-radius:4px;font-size:0.8rem">url: ''</code>
+      maydoniga video havolasini qo'ying.</p>`;
+    return;
+  }
+
+  placeholder.style.display = 'none';
+  box.querySelectorAll('iframe, video').forEach(el => el.remove());
+
+  // Detect YouTube
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) {
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`;
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    box.appendChild(iframe);
+    return;
+  }
+
+  // Detect Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) {
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+    iframe.allowFullscreen = true;
+    box.appendChild(iframe);
+    return;
+  }
+
+  // Direct video file (mp4, webm, etc.)
+  if (url.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i)) {
+    const vid = document.createElement('video');
+    vid.src = url;
+    vid.controls = true;
+    vid.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;background:#000';
+    box.appendChild(vid);
+    return;
+  }
+
+  // Generic iframe (Google Drive, etc.)
+  const iframe = document.createElement('iframe');
+  iframe.src = url;
+  iframe.allow = 'autoplay; fullscreen';
+  iframe.allowFullscreen = true;
+  box.appendChild(iframe);
+}
+
+// ── RENDER PLAYLIST ──
+function renderPlaylist() {
+  const list = document.getElementById('playlist-list');
+  courseProgress = getCourseProgress(currentCourseId);
+  const donedIds = courseProgress.videos || [];
+
+  list.innerHTML = currentCourse.videos.map((v, i) => {
+    const isDone = donedIds.includes(v.id);
+    const isActive = i === currentVideoIdx;
+
+    let numClass = 'todo';
+    let numContent = i + 1;
+    if (isActive && !isDone) { numClass = 'playing'; numContent = '▶'; }
+    else if (isDone) { numClass = 'done-num'; numContent = '✓'; }
+
+    return `
+      <div class="playlist-item ${isActive ? 'active' : ''} ${isDone ? 'completed' : ''}"
+           id="pl-item-${i}"
+           onclick="loadVideo(${i})"
+           title="${v.title}">
+        <div class="pl-num ${numClass}">${numContent}</div>
+        <div class="pl-info">
+          <div class="pl-title">${v.title}</div>
+          <div class="pl-dur">⏱ ${v.duration}${v.url ? '' : ' · <span style="color:var(--text-dim);font-size:0.7rem">URL yo\'q</span>'}</div>
+        </div>
+        ${isDone ? '<div class="pl-done-badge">✓</div>' : ''}
+      </div>`;
+  }).join('');
+
+  // Sidebar header
+  document.getElementById('sidebar-course-title').textContent = currentCourse.emoji + ' ' + currentCourse.title;
+  document.getElementById('sidebar-total-count').textContent = currentCourse.videos.length;
+  updateProgressUI();
+
+  // Show finish banner if 100%
+  const pct = courseProgress.percent || 0;
+  document.getElementById('finish-banner').style.display = pct === 100 ? 'block' : 'none';
+}
+
+// ── HIGHLIGHT ACTIVE ITEM ──
+function highlightPlaylistItem(idx) {
+  document.querySelectorAll('.playlist-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+    const numEl = el.querySelector('.pl-num');
+    if (!numEl) return;
+    const isDone = numEl.classList.contains('done-num');
+    if (i === idx && !isDone) {
+      numEl.className = 'pl-num playing';
+      numEl.textContent = '▶';
+    } else if (!isDone) {
+      numEl.className = 'pl-num todo';
+      numEl.textContent = i + 1;
+    }
+  });
+
+  // Scroll active item into view
+  const activeEl = document.getElementById(`pl-item-${idx}`);
+  if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── UPDATE PROGRESS UI ──
+function updateProgressUI() {
+  courseProgress = getCourseProgress(currentCourseId);
+  const doneCnt = (courseProgress.videos || []).length;
+  const total = currentCourse.videos.length;
+  const pct = courseProgress.percent || 0;
+
+  // Mini nav bar
+  document.getElementById('done-count').textContent = doneCnt;
+  document.getElementById('total-count').textContent = total;
+  document.getElementById('mini-prog-fill').style.width = pct + '%';
+
+  // Sidebar
+  document.getElementById('sidebar-done-count').textContent = doneCnt;
+  document.getElementById('sidebar-prog-bar').style.width = pct + '%';
+  document.getElementById('sidebar-pct').textContent = pct + '%';
+}
+
+// ── TOGGLE DONE ──
+function toggleCurrentDone() {
+  const video = currentCourse.videos[currentVideoIdx];
+  courseProgress = getCourseProgress(currentCourseId);
+  const isDone = courseProgress.videos?.includes(video.id);
+
+  const newProg = saveCourseProgress(currentCourseId, video.id, !isDone);
+  courseProgress = newProg;
+
+  if (!isDone) {
+    showToast('✅ Dars tugatildi!', 'success');
+
+    // Check course completion
+    if (newProg.percent === 100) {
+      setTimeout(() => showCompletionOverlay(), 800);
+    } else {
+      // Auto-advance to next lesson after 1.2s
+      if (currentVideoIdx < currentCourse.videos.length - 1) {
+        setTimeout(() => goNext(), 1200);
+      }
+    }
+  } else {
+    showToast('↩ Dars bekor qilindi', 'info');
+  }
+
+  // Refresh UI
+  loadVideo(currentVideoIdx);
+  renderPlaylist();
+}
+
+// ── PREV / NEXT ──
+function goPrev() {
+  if (currentVideoIdx > 0) loadVideo(currentVideoIdx - 1);
+}
+
+function goNext() {
+  if (currentVideoIdx < currentCourse.videos.length - 1) loadVideo(currentVideoIdx + 1);
+}
+
+// ── COMPLETION OVERLAY ──
+function showCompletionOverlay() {
+  document.getElementById('comp-course-name').textContent = currentCourse.emoji + ' ' + currentCourse.title;
+
+  const u = Auth.getUser();
+  const hasF = (u?.completedCourses || []).includes('frontend') || currentCourseId === 'frontend';
+  const hasB = (u?.completedCourses || []).includes('backend') || currentCourseId === 'backend';
+  let desc = `Siz barcha darslarni muvaffaqiyatli yakunladingiz!`;
+  if (hasF && hasB) desc += ' 🏆 Endi siz Full-Stack Developer sifatida tan olindingiz!';
+  document.getElementById('comp-desc').textContent = desc;
+
+  document.getElementById('finish-banner').style.display = 'block';
+  document.getElementById('completion-overlay').classList.add('show');
+}
+
+function closeCompletion() {
+  document.getElementById('completion-overlay').classList.remove('show');
+}
+
+function goToCertificate() {
+  window.location.href = `certificate.html?course=${currentCourseId}`;
+}
+
+// ── BREADCRUMB ──
+function updateNavBreadcrumb() {
+  document.getElementById('nav-course-name').textContent = currentCourse.title;
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goPrev();
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCurrentDone(); }
+});
+</script>
+</body>
+</html>
