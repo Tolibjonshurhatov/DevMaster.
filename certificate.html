@@ -146,11 +146,11 @@
 }
 </style>
 
-<script src="js/app.js"></script>
-<script src="js/courses.js"></script>
+<script type="module" src="js/app.js"></script>
+<script type="module" src="js/courses.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const user = Auth.getUser();
+  const user = window.Auth?._profile;
   const params = new URLSearchParams(window.location.search);
   const courseId = params.get('course');
 
@@ -165,9 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const users = JSON.parse(localStorage.getItem('dm_users') || '[]');
-  const freshUser = users.find(u => u.id === user.id) || user;
-  const certs = freshUser.certificates || [];
+  
+  const freshUser = user;
+  const certs = (user?.certificates || []);
 
   if (courseId) {
     const cert = certs.find(c => c.courseId === courseId);

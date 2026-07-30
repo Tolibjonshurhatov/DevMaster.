@@ -718,8 +718,8 @@
 
 <div id="toast-container" class="toast-container"></div>
 
-<script src="js/app.js"></script>
-<script src="js/courses.js"></script>
+<script type="module" src="js/app.js"></script>
+<script type="module" src="js/courses.js"></script>
 <script>
 // ── STATE ──
 let currentCourseId = null;
@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
   currentCourseId = params.get('course') || 'frontend';
   const videoParam = parseInt(params.get('video') || '0');
 
-  if (!Auth.isLoggedIn()) {
+  if (!window.Auth?.isLoggedIn()) {
     showToast('Darslarni ko\'rish uchun kiring', 'info');
     setTimeout(() => window.location.href = 'index.html', 1200);
     return;
@@ -1007,7 +1007,7 @@ function goNext() {
 function showCompletionOverlay() {
   document.getElementById('comp-course-name').textContent = currentCourse.emoji + ' ' + currentCourse.title;
 
-  const u = Auth.getUser();
+  const u = window.Auth?._profile;
   const hasF = (u?.completedCourses || []).includes('frontend') || currentCourseId === 'frontend';
   const hasB = (u?.completedCourses || []).includes('backend') || currentCourseId === 'backend';
   let desc = `Siz barcha darslarni muvaffaqiyatli yakunladingiz!`;
