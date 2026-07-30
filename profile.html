@@ -1,154 +1,234 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="./images/devmaster-r.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profil — DevMaster</title>
-  <link rel="stylesheet" href="styles/main.css"/>
-  <link rel="stylesheet" href="styles/auth.css"/>
-  <link rel="stylesheet" href="styles/certificate.css"/>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/auth.css" />
+  <link rel="stylesheet" href="styles/certificate.css" />
 </head>
 <body>
+
 <div class="bg-grid"></div>
-<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
 
 <nav class="navbar" id="navbar">
   <a href="index.html" class="nav-logo">
-    <img src="./images/dev_v copy.jpg" alt=""><span>DevMaster</span>
+    <img src="./images/dev_v copy.jpg" alt="">
+    <span>DevMaster</span>
   </a>
   <ul class="nav-links">
     <li><a href="index.html">Bosh sahifa</a></li>
     <li><a href="courses.html">Kurslar</a></li>
-    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="index.html#features">Imkoniyatlar</a></li>
+    <li><a href="index.html#faq">FAQ</a></li>
   </ul>
   <div class="nav-actions" id="nav-auth-area"></div>
 </nav>
 
-<div class="profile-page">
-  <div id="profile-root">
-    <div style="min-height:80vh;display:flex;align-items:center;justify-content:center">
-      <div style="font-size:2.5rem;animation:spin 1s linear infinite">⚙️</div>
-    </div>
-  </div>
+<div class="profile-page" id="profile-page">
+  <div id="profile-root"></div>
 </div>
 
 <div id="toast-container" class="toast-container"></div>
 
 <style>
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.profile-cover{background:linear-gradient(135deg,#0f172a 0%,#0d9488 50%,#111827 100%)!important;position:relative;height:240px;overflow:hidden}
-.logout-btn{background:rgba(255,101,132,0.1);border:1px solid rgba(255,101,132,0.3);color:var(--accent2);padding:8px 18px;border-radius:var(--radius-sm);font-size:0.88rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'DM Sans',sans-serif}
-.logout-btn:hover{background:rgba(255,101,132,0.2)}
-.tab-bar{display:flex;gap:0.25rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;flex-wrap:wrap}
-.tab-btn{padding:10px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text-muted);font-size:0.9rem;font-weight:500;cursor:pointer;transition:var(--transition);font-family:'DM Sans',sans-serif;margin-bottom:-1px}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab-panel{display:none}.tab-panel.active{display:block}
-.edit-field{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;border-bottom:1px solid var(--border)}
-.edit-field:last-child{border-bottom:none}
-.edit-field-label{font-size:0.82rem;color:var(--text-dim);margin-bottom:2px}
-.edit-field-val{font-size:0.95rem;font-weight:500}
-.edit-btn{background:var(--glass);border:1px solid var(--border);color:var(--accent);padding:5px 12px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+  /* MUQOVA (COVER) UCHUN YANGI RANG VA GRADIENT STILI */
+  .profile-cover {
+    background: linear-gradient(135deg, #0f172a 0%, #0d9488 50%, #111827 100%) !important;
+    position: relative;
+    height: 240px;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .logout-btn {
+    background: rgba(255,101,132,0.1);
+    border: 1px solid rgba(255,101,132,0.3);
+    color: var(--accent2);
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .logout-btn:hover { background: rgba(255,101,132,0.2); }
+
+  .tab-bar {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    padding: 10px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .edit-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .edit-field:last-child { border-bottom: none; }
+  .edit-field-label { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 2px; }
+  .edit-field-val { font-size: 0.95rem; font-weight: 500; }
+  .edit-btn {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'DM Sans', sans-serif;
+    flex-shrink: 0;
+  }
+  .edit-btn:hover { background: var(--glass-hover); }
 </style>
 
-<script type="module" src="js/app.js"></script>
-<script type="module" src="js/courses.js"></script>
-<script type="module">
-import { auth, db } from "./js/firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-import { doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
-onAuthStateChanged(auth, async (fireUser) => {
-  if (!fireUser) {
-    document.getElementById("profile-root").innerHTML = `
+<script src="js/app.js"></script>
+<script src="js/courses.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const user = Auth.getUser();
+  if (!user) {
+    document.getElementById('profile-root').innerHTML = `
       <div style="min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;text-align:center;padding:2rem">
         <div style="font-size:4rem">🔒</div>
         <h2 style="font-family:'Syne',sans-serif;font-weight:800">Tizimga kirish kerak</h2>
-        <p style="color:var(--text-muted)">Profilingizni ko'rish uchun tizimga kiring.</p>
-        <button class="btn btn-primary btn-lg" onclick="window.location.href='index.html'" style="cursor:pointer">🏠 Bosh sahifaga</button>
+        <p style="color:var(--text-muted)">Profilingizni ko'rish her bir amaldan oldin tizimga kiring.</p>
+        <button class="btn btn-primary btn-lg" onclick="window.location.href='index.html'" style="cursor:pointer">🏠 Bosh sahifaga qaytish</button>
       </div>`;
     return;
   }
 
-  const snap = await getDoc(doc(db, "users", fireUser.uid));
-  if (!snap.exists()) return;
-  const user = snap.data();
-  window._currentUser = user;
-  window._uid = fireUser.uid;
-  renderProfile(user);
+  const users = JSON.parse(localStorage.getItem('dm_users') || '[]');
+  const freshUser = users.find(u => u.id === user.id) || user;
+
+  renderProfile(freshUser);
 });
 
 function renderProfile(user) {
-  const initials = (user.firstName?.[0]||"")+(user.lastName?.[0]||"");
+  const initials = (user.firstName?.[0] || '') + (user.lastName?.[0] || '');
   const completedCourses = user.completedCourses || [];
   const certs = user.certificates || [];
   const prog = user.progress || {};
 
-  let devTitle = "";
-  if (completedCourses.includes("frontend") && completedCourses.includes("backend")) devTitle = "🏆 Full-Stack Developer";
-  else if (completedCourses.includes("frontend")) devTitle = "🎨 Frontend Developer";
-  else if (completedCourses.includes("backend"))  devTitle = "⚙️ Backend Developer";
-  else if (completedCourses.length > 0)           devTitle = "💻 IT Developer";
+  let devTitle = '';
+  const hasF = completedCourses.includes('frontend');
+  const hasB = completedCourses.includes('backend');
+  if (hasF && hasB) devTitle = '🏆 Full-Stack Developer';
+  else if (hasF) devTitle = '🎨 Frontend Developer';
+  else if (hasB) devTitle = '⚙️ Backend Developer';
+  else if (completedCourses.length > 0) devTitle = '💻 IT Developer';
 
-  const lvlMap = {starter:{label:"Starter",cls:"level-starter"},pro:{label:"Pro",cls:"level-pro"},expert:{label:"Expert",cls:"level-expert"}};
-  const lvl = lvlMap[user.level||"starter"];
+  const levelMap = { starter: { label: 'Starter', class: 'level-starter' }, pro: { label: 'Pro', class: 'level-pro' }, expert: { label: 'Expert', class: 'level-expert' } };
+  const lvl = levelMap[user.level || 'starter'];
 
   let totalDone = 0;
-  Object.values(prog).forEach(p=>{if(p.videos) totalDone+=p.videos.length;});
+  Object.values(prog).forEach(p => { if (p.videos) totalDone += p.videos.length; });
 
-  let actHtml = "";
-  for(let i=0;i<70;i++){const r=Math.random();actHtml+=`<div class="activity-day ${r>0.85?"active-4":r>0.7?"active-3":r>0.55?"active-2":r>0.4?"active-1":""}"></div>`;}
+  let activityHtml = '';
+  for (let i = 0; i < 70; i++) {
+    const r = Math.random();
+    const cls = r > 0.85 ? 'active-4' : r > 0.7 ? 'active-3' : r > 0.55 ? 'active-2' : r > 0.4 ? 'active-1' : '';
+    activityHtml += `<div class="activity-day ${cls}" title="Faollik"></div>`;
+  }
 
-  let inProgHtml = "";
-  (window.COURSES||[]).forEach(c=>{
-    const p=prog[c.id];
-    if(p&&p.percent>0&&p.percent<100) inProgHtml+=`
-      <div class="course-progress-item">
-        <div class="cpi-header"><span class="cpi-name">${c.emoji} ${c.title}</span><span class="cpi-pct">${p.percent}%</span></div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:${p.percent}%"></div></div>
-        <div style="font-size:0.78rem;color:var(--text-dim);margin-top:4px">${(p.videos||[]).length}/${c.videos.length} dars</div>
-      </div>`;
+  let inProgressHtml = '';
+  COURSES.forEach(c => {
+    const p = prog[c.id];
+    if (p && p.percent > 0 && p.percent < 100) {
+      inProgressHtml += `
+        <div class="course-progress-item">
+          <div class="cpi-header">
+            <span class="cpi-name">${c.emoji} ${c.title}</span>
+            <span class="cpi-pct">${p.percent}%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width:${p.percent}%"></div>
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-dim);margin-top:4px">${p.videos?.length || 0}/${c.videos.length} dars</div>
+        </div>`;
+    }
   });
-  if(!inProgHtml) inProgHtml=`<p style="color:var(--text-dim);font-size:0.88rem">Hali boshlangan kurs yo'q. <a href="courses.html" style="color:var(--accent)">Kurs boshlash →</a></p>`;
+  if (!inProgressHtml) inProgressHtml = '<p style="color:var(--text-dim);font-size:0.88rem">Hali boshlangan kurs yo\'q. <a href="courses.html" style="color:var(--accent)">Kurs boshlash →</a></p>';
 
-  let compHtml = "";
-  completedCourses.forEach(cId=>{
-    const c=(window.COURSES||[]).find(x=>x.id===cId);
-    if(c) compHtml+=`
+  let completedHtml = '';
+  completedCourses.forEach(cId => {
+    const c = COURSES.find(x => x.id === cId);
+    if (c) completedHtml += `
       <div style="display:flex;align-items:center;gap:12px;padding:0.85rem;background:rgba(67,233,123,0.05);border:1px solid rgba(67,233,123,0.15);border-radius:10px;margin-bottom:0.75rem">
         <span style="font-size:1.5rem">${c.emoji}</span>
-        <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">${c.title}</div><div style="font-size:0.78rem;color:var(--accent3)">✅ Tugatildi</div></div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.9rem">${c.title}</div>
+          <div style="font-size:0.78rem;color:var(--accent3)">✅ Tugatildi</div>
+        </div>
         <a href="certificate.html?course=${c.id}" class="btn btn-sm" style="background:rgba(247,201,72,0.1);border:1px solid rgba(247,201,72,0.3);color:var(--gold);cursor:pointer">🎓 Sertifikat</a>
       </div>`;
   });
-  if(!compHtml) compHtml=`<p style="color:var(--text-dim);font-size:0.88rem">Hali tugatilgan kurs yo'q.</p>`;
+  if (!completedHtml) completedHtml = '<p style="color:var(--text-dim);font-size:0.88rem">Hali tugatilgan kurs yo\'q.</p>';
 
-  let certHtml = "";
-  certs.forEach(cert=>{
-    certHtml+=`<div class="cert-mini" onclick="window.location.href='certificate.html?course=${cert.courseId}'" style="cursor:pointer">
-      <div class="cert-mini-icon">🏆</div>
-      <div class="cert-mini-info"><strong>${cert.courseName||cert.courseId}</strong><span>${cert.earnedAt}</span></div>
-    </div>`;
+  let certSideHtml = '';
+  certs.forEach(cert => {
+    certSideHtml += `
+      <div class="cert-mini" onclick="window.location.href='certificate.html?course=${cert.courseId}'" style="cursor:pointer">
+        <div class="cert-mini-icon">🏆</div>
+        <div class="cert-mini-info">
+          <strong>${cert.courseName}</strong>
+          <span>${cert.earnedAt}</span>
+        </div>
+      </div>`;
   });
-  if(!certHtml) certHtml=`<p style="color:var(--text-dim);font-size:0.82rem">Hali sertifikat yo'q.</p>`;
+  if (!certSideHtml) certSideHtml = '<p style="color:var(--text-dim);font-size:0.82rem">Hali sertifikat yo\'q. Kurs tugating!</p>';
 
-  document.getElementById("profile-root").innerHTML = `
+  document.getElementById('profile-root').innerHTML = `
     <div class="profile-cover">
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;opacity:0.08">
-        <span style="font-family:'Syne',sans-serif;font-size:6.5rem;font-weight:900;color:#fff;user-select:none">DevMaster</span>
+        <span style="font-family:'Syne',sans-serif;font-size:6.5rem;font-weight:900;color:#ffffff;letter-spacing:-2px;user-select:none">DevMaster</span>
       </div>
     </div>
+
     <div class="profile-content">
       <div class="profile-header">
         <div class="profile-avatar-lg">${initials}</div>
         <div class="profile-info">
           <h1>${user.firstName} ${user.lastName}
-            ${devTitle?`<span style="font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--gold);margin-left:10px">${devTitle}</span>`:""}
+            ${devTitle ? `<span style="font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--gold);margin-left:10px">${devTitle}</span>` : ''}
           </h1>
-          <div class="username">@${user.username||""} · ${user.email}</div>
+          <div class="username">@${user.username || user.email.split('@')[0]} · ${user.email}</div>
           <div class="profile-tags">
-            <span class="level-badge ${lvl.cls}">⭐ ${lvl.label}</span>
-            <span class="tag">${user.xp||0} XP</span>
+            <span class="level-badge ${lvl.class}">⭐ ${lvl.label}</span>
+            <span class="tag">${user.xp || 0} XP</span>
             <span class="tag green">${completedCourses.length} kurs tugatildi</span>
             <span class="tag gold">${certs.length} sertifikat</span>
           </div>
@@ -160,10 +240,22 @@ function renderProfile(user) {
       </div>
 
       <div class="stats-row" style="margin-bottom:1.5rem">
-        <div class="stat-box animate-in"><span class="val">${completedCourses.length}</span><div class="lbl">Tugatilgan</div></div>
-        <div class="stat-box animate-in"><span class="val">${totalDone}</span><div class="lbl">Darslar</div></div>
-        <div class="stat-box animate-in"><span class="val">${certs.length}</span><div class="lbl">Sertifikat</div></div>
-        <div class="stat-box animate-in"><span class="val">${user.xp||0}</span><div class="lbl">XP Ball</div></div>
+        <div class="stat-box animate-in">
+          <span class="val">${completedCourses.length}</span>
+          <div class="lbl">Tugatilgan</div>
+        </div>
+        <div class="stat-box animate-in">
+          <span class="val">${totalDone}</span>
+          <div class="lbl">Darslar</div>
+        </div>
+        <div class="stat-box animate-in">
+          <span class="val">${certs.length}</span>
+          <div class="lbl">Sertifikat</div>
+        </div>
+        <div class="stat-box animate-in">
+          <span class="val">${user.xp || 0}</span>
+          <div class="lbl">XP Ball</div>
+        </div>
       </div>
 
       <div class="profile-grid">
@@ -175,101 +267,196 @@ function renderProfile(user) {
               <button class="tab-btn" onclick="switchTab('tab-activity',this)">📅 Faollik</button>
               <button class="tab-btn" onclick="switchTab('tab-settings',this)">⚙️ Sozlamalar</button>
             </div>
-            <div id="tab-progress" class="tab-panel active">${inProgHtml}</div>
-            <div id="tab-completed" class="tab-panel">${compHtml}</div>
-            <div id="tab-activity" class="tab-panel">
-              <div class="activity-grid">${actHtml}</div>
+
+            <div id="tab-progress" class="tab-panel active">
+              <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.25rem;font-size:1rem;display:flex;align-items:center;gap:8px">
+                <span style="width:3px;height:18px;background:var(--accent);border-radius:2px;display:inline-block"></span>
+                Jarayondagi kurslar
+              </h3>
+              ${inProgressHtml}
             </div>
+
+            <div id="tab-completed" class="tab-panel">
+              <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.25rem;font-size:1rem;display:flex;align-items:center;gap:8px">
+                <span style="width:3px;height:18px;background:var(--accent3);border-radius:2px;display:inline-block"></span>
+                Tugatilgan kurslar
+              </h3>
+              ${completedHtml}
+              ${devTitle ? `
+              <div style="padding:1rem;background:rgba(247,201,72,0.06);border:1px solid rgba(247,201,72,0.25);border-radius:12px;margin-top:1rem;display:flex;align-items:center;gap:12px">
+                <span style="font-size:1.8rem">🏆</span>
+                <div>
+                  <div style="font-weight:700;color:var(--gold)">${devTitle}</div>
+                  <div style="font-size:0.82rem;color:var(--text-muted)">Siz bu unvonga ega bo'ldingiz!</div>
+                </div>
+              </div>` : ''}
+            </div>
+
+            <div id="tab-activity" class="tab-panel">
+              <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.25rem;font-size:1rem;display:flex;align-items:center;gap:8px">
+                <span style="width:3px;height:18px;background:var(--accent2);border-radius:2px;display:inline-block"></span>
+                O'quv faolligi (so'nggi 10 hafta)
+              </h3>
+              <div class="activity-grid">${activityHtml}</div>
+              <div style="display:flex;gap:1rem;margin-top:1rem;font-size:0.78rem;color:var(--text-dim);align-items:center">
+                <span>Kam</span>
+                <div style="display:flex;gap:3px">
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(255,255,255,0.05)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(108,99,255,0.3)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(108,99,255,0.5)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(108,99,255,0.8)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:var(--accent)"></div>
+                </div>
+                <span>Ko'p</span>
+              </div>
+            </div>
+
             <div id="tab-settings" class="tab-panel">
-              <div class="edit-field"><div><div class="edit-field-label">Ism</div><div class="edit-field-val">${user.firstName}</div></div><button class="edit-btn" onclick="openEditModal()">Tahrirlash</button></div>
-              <div class="edit-field"><div><div class="edit-field-label">Familiya</div><div class="edit-field-val">${user.lastName}</div></div></div>
-              <div class="edit-field"><div><div class="edit-field-label">Username</div><div class="edit-field-val">@${user.username||"-"}</div></div></div>
-              <div class="edit-field"><div><div class="edit-field-label">Email</div><div class="edit-field-val">${user.email}</div></div></div>
-              <div class="edit-field"><div><div class="edit-field-label">A'zo bo'lgan sana</div><div class="edit-field-val">${user.joinedAt||"Bugun"}</div></div></div>
+              <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.25rem;font-size:1rem;display:flex;align-items:center;gap:8px">
+                <span style="width:3px;height:18px;background:var(--text-dim);border-radius:2px;display:inline-block"></span>
+                Profil ma'lumotlari
+              </h3>
+              <div class="edit-field">
+                <div><div class="edit-field-label">Ism</div><div class="edit-field-val">${user.firstName}</div></div>
+                <button class="edit-btn" onclick="openEditModal()" style="pointer-events:auto;cursor:pointer">Tahrirlash</button>
+              </div>
+              <div class="edit-field">
+                <div><div class="edit-field-label">Familiya</div><div class="edit-field-val">${user.lastName}</div></div>
+              </div>
+              <div class="edit-field">
+                <div><div class="edit-field-label">Username</div><div class="edit-field-val">@${user.username || '-'}</div></div>
+              </div>
+              <div class="edit-field">
+                <div><div class="edit-field-label">Email</div><div class="edit-field-val">${user.email}</div></div>
+              </div>
+              <div class="edit-field">
+                <div><div class="edit-field-label">A'zo bo'lgan sana</div><div class="edit-field-val">${user.joinedAt || 'Bugun'}</div></div>
+              </div>
               <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
-                <button class="logout-btn" onclick="Auth.logout()">🚪 Tizimdan chiqish</button>
+                <button class="logout-btn" onclick="Auth.logout()" style="cursor:pointer">🚪 Tizimdan chiqish</button>
               </div>
             </div>
           </div>
         </div>
+
         <div class="profile-sidebar">
           <div class="sidebar-card">
             <h3>Profil ma'lumotlari</h3>
-            <div class="info-row"><span class="icon">👤</span><div><div class="info-label">To'liq ism</div><div class="info-val">${user.firstName} ${user.lastName}</div></div></div>
-            <div class="info-row"><span class="icon">@</span><div><div class="info-label">Username</div><div class="info-val">@${user.username||"-"}</div></div></div>
-            <div class="info-row"><span class="icon">📧</span><div><div class="info-label">Email</div><div class="info-val" style="font-size:0.82rem">${user.email}</div></div></div>
-            <div class="info-row"><span class="icon">📅</span><div><div class="info-label">A'zo</div><div class="info-val">${user.joinedAt||"Bugun"}</div></div></div>
-            <div class="info-row"><span class="icon">🏅</span><div><div class="info-label">Daraja</div><div class="info-val"><span class="level-badge ${lvl.cls}">${lvl.label}</span></div></div></div>
+            <div class="info-row">
+              <span class="icon">👤</span>
+              <div><div class="info-label">To'liq ism</div><div class="info-val">${user.firstName} ${user.lastName}</div></div>
+            </div>
+            <div class="info-row">
+              <span class="icon">@</span>
+              <div><div class="info-label">Username</div><div class="info-val">@${user.username || user.email.split('@')[0]}</div></div>
+            </div>
+            <div class="info-row">
+              <span class="icon">📧</span>
+              <div><div class="info-label">Email</div><div class="info-val" style="font-size:0.82rem">${user.email}</div></div>
+            </div>
+            <div class="info-row">
+              <span class="icon">📅</span>
+              <div><div class="info-label">A'zo</div><div class="info-val">${user.joinedAt || 'Bugun'}</div></div>
+            </div>
+            <div class="info-row">
+              <span class="icon">🏅</span>
+              <div><div class="info-label">Daraja</div><div class="info-val"><span class="level-badge ${lvl.class}">${lvl.label}</span></div></div>
+            </div>
           </div>
+
           <div class="sidebar-card">
             <h3>Sertifikatlarim</h3>
-            ${certHtml}
-            ${certs.length>0?`<a href="certificate.html" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:0.5rem;cursor:pointer">Barchasini ko'rish</a>`:""}
+            ${certSideHtml}
+            ${certs.length > 0 ? `<a href="certificate.html" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:0.5rem;cursor:pointer">Barchasini ko'rish</a>` : ''}
           </div>
+
           <div class="sidebar-card">
             <h3>Tez harakatlar</h3>
             <div style="display:flex;flex-direction:column;gap:0.5rem">
-              <a href="courses.html" class="btn btn-ghost btn-sm" style="justify-content:flex-start">📚 Kurslarga o'tish</a>
-              <a href="certificate.html" class="btn btn-ghost btn-sm" style="justify-content:flex-start">🏆 Sertifikatlarim</a>
+              <a href="courses.html" class="btn btn-ghost btn-sm" style="justify-content:flex-start;cursor:pointer">📚 Kurslarga o'tish</a>
+              <a href="certificate.html" class="btn btn-ghost btn-sm" style="justify-content:flex-start;cursor:pointer">🏆 Sertifikatlarim</a>
               <button class="btn btn-ghost btn-sm" onclick="openEditModal()" style="justify-content:flex-start;cursor:pointer">✏️ Profilni tahrirlash</button>
             </div>
           </div>
         </div>
       </div>
-    </div>`;
+    </div>
+  `;
 
   initScrollAnimations();
 }
 
-window.switchTab = function(tabId, btn) {
-  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.getElementById(tabId)?.classList.add("active");
-  btn.classList.add("active");
-};
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId)?.classList.add('active');
+  btn.classList.add('active');
+}
 
-window.openEditModal = function() {
-  const user = window._currentUser;
+function openEditModal() {
+  const user = Auth.getUser();
   if (!user) return;
-  const overlay = document.createElement("div");
-  overlay.className = "modal-overlay open";
-  overlay.id = "edit-modal-overlay";
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay open';
+  overlay.id = 'edit-modal-overlay';
   overlay.innerHTML = `
     <div class="modal" style="max-width:480px">
-      <button class="modal-close" onclick="document.getElementById('edit-modal-overlay').remove();document.body.style.overflow=''" style="cursor:pointer">✕</button>
-      <div class="modal-header"><h2>Profilni tahrirlash ✏️</h2><p>Ma'lumotlaringizni yangilang</p></div>
-      <form onsubmit="saveProfileEdit(event)">
+      <button class="modal-close" onclick="document.getElementById('edit-modal-overlay').remove()" style="cursor:pointer">✕</button>
+      <div class="modal-header">
+        <h2>Profilni tahrirlash ✏️</h2>
+        <p>Ma'lumotlaringizni yangilang</p>
+      </div>
+      <form onsubmit="saveProfile(event)">
         <div class="form-row">
-          <div class="form-group"><label>Ism</label><input type="text" id="edit-fname" class="form-input" value="${user.firstName}" required/></div>
-          <div class="form-group"><label>Familiya</label><input type="text" id="edit-lname" class="form-input" value="${user.lastName}" required/></div>
+          <div class="form-group">
+            <label>Ism</label>
+            <input type="text" id="edit-fname" class="form-input" value="${user.firstName}" required />
+          </div>
+          <div class="form-group">
+            <label>Familiya</label>
+            <input type="text" id="edit-lname" class="form-input" value="${user.lastName}" required />
+          </div>
         </div>
-        <div class="form-group"><label>Email (o'zgartirib bo'lmaydi)</label><input type="email" class="form-input" value="${user.email}" disabled style="opacity:0.5"/></div>
-        <div class="form-group"><label>Username (o'zgartirib bo'lmaydi)</label><input type="text" class="form-input" value="@${user.username}" disabled style="opacity:0.5"/></div>
+        <div class="form-group">
+          <label>Username</label>
+          <div class="input-icon-wrap">
+            <span class="icon">@</span>
+            <input type="text" id="edit-username" class="form-input" value="${user.username || ''}" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email (o'zgartirib bo'lmaydi)</label>
+          <input type="email" class="form-input" value="${user.email}" disabled style="opacity:0.5" />
+        </div>
         <button type="submit" class="btn btn-primary btn-full" style="cursor:pointer">Saqlash ✅</button>
       </form>
     </div>`;
-  overlay.addEventListener("click", e=>{if(e.target===overlay){overlay.remove();document.body.style.overflow="";}});
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
   document.body.appendChild(overlay);
-  document.body.style.overflow = "hidden";
-};
+}
 
-window.saveProfileEdit = async function(e) {
+function saveProfile(e) {
   e.preventDefault();
-  const updates = {
-    firstName: document.getElementById("edit-fname").value.trim(),
-    lastName:  document.getElementById("edit-lname").value.trim(),
+  const user = Auth.getUser();
+  const users = JSON.parse(localStorage.getItem('dm_users') || '[]');
+  const idx = users.findIndex(u => u.id === user.id);
+
+  const updated = {
+    ...user,
+    firstName: document.getElementById('edit-fname').value.trim(),
+    lastName: document.getElementById('edit-lname').value.trim(),
+    username: document.getElementById('edit-username').value.trim(),
   };
-  try {
-    await updateDoc(doc(db, "users", window._uid), updates);
-    window._currentUser = {...window._currentUser, ...updates};
-    document.getElementById("edit-modal-overlay")?.remove();
-    document.body.style.overflow = "";
-    showToast("Profil yangilandi! ✅", "success");
-    setTimeout(()=>location.reload(), 700);
-  } catch(err) {
-    showToast("Xato: " + err.message, "error");
-  }
-};
+
+  if (idx >= 0) users[idx] = updated;
+  localStorage.setItem('dm_users', JSON.stringify(users));
+  Auth.setUser(updated);
+
+  document.getElementById('edit-modal-overlay')?.remove();
+  showToast('Profil yangilandi! ✅', 'success');
+  setTimeout(() => location.reload(), 600);
+}
 </script>
 </body>
 </html>

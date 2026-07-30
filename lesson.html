@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="./images/dev_v copy.jpg">
+  <link rel="icon" type="image/png" href="./images/devmaster-r.jpg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dars — DevMaster</title>
   <link rel="stylesheet" href="styles/main.css" />
@@ -718,9 +718,11 @@
 
 <div id="toast-container" class="toast-container"></div>
 
-<script type="module" src="js/app.js"></script>
-<script type="module" src="js/courses.js"></script>
+<script src="js/app.js"></script>
+<script src="js/courses.js"></script>
 <script>
+
+  
 // ── STATE ──
 let currentCourseId = null;
 let currentVideoIdx = 0;
@@ -733,7 +735,7 @@ document.addEventListener('DOMContentLoaded', () => {
   currentCourseId = params.get('course') || 'frontend';
   const videoParam = parseInt(params.get('video') || '0');
 
-  if (!window.Auth?.isLoggedIn()) {
+  if (!Auth.isLoggedIn()) {
     showToast('Darslarni ko\'rish uchun kiring', 'info');
     setTimeout(() => window.location.href = 'index.html', 1200);
     return;
@@ -1007,7 +1009,7 @@ function goNext() {
 function showCompletionOverlay() {
   document.getElementById('comp-course-name').textContent = currentCourse.emoji + ' ' + currentCourse.title;
 
-  const u = window.Auth?._profile;
+  const u = Auth.getUser();
   const hasF = (u?.completedCourses || []).includes('frontend') || currentCourseId === 'frontend';
   const hasB = (u?.completedCourses || []).includes('backend') || currentCourseId === 'backend';
   let desc = `Siz barcha darslarni muvaffaqiyatli yakunladingiz!`;
